@@ -1,3 +1,3 @@
 # Python Automation
 
-small, useful Python automation programs
+small and useful automation programs in Python
