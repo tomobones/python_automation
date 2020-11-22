@@ -13,7 +13,6 @@ def parse_arguments():
         for element in sys.argv[1:]: files.append(element)
     return files
 
-# deal with stdinput
 def parse_stdinput():
     files = []
     if not sys.stdin.isatty():
