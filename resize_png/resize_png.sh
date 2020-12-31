@@ -41,7 +41,6 @@ def resize_png(path):
     png.save(path[:-4] + '_' + str(width) + 'x' + str(height) + '.png')
     new_png.save(path)
 
-
 def main():
     files = list(parse_arguments())
     if files == []:
@@ -54,4 +53,5 @@ def main():
             resize_png(file)
             sys.stdout.write("success: made a backup and resized " + file + "\n")
 
-main()
+if __name__ == "__main__":
+    main()
