@@ -1,24 +1,21 @@
 '''
 module managing I/O for shell scripts
+
+
+- include way to output error with specific levels
+
 '''
 
-import sys
-
-# ________________________________________________________________
-# global variables
-systemProgramName = sys.argv[0]
-if len(sys.argv) > 1: systemArguments = sys.argv[1:]
-else: systemArguments = []
 
 # ________________________________________________________________
 # data structures for reading the arguments
 
 
 class PossibleOption:
-    def __init__(self, key, numberParameter, isObligatory):
+    def __init__(self, key, numberParameter, isMandatory):
         self.key = key
         self.numberParameter = numberParameter
-        self.isObligatory = isObligatory
+        self.isMandatory = isMandatory
 
 class ActualOption:
     def __init__(self, key, parameters):
@@ -26,13 +23,17 @@ class ActualOption:
         self.parameters = parameters
 
 # ________________________________________________________________
-# functions
+# public functions
 
-def getOptions(possibleOptions):
+def getOptions(possibleOptions, argv):
     actualOptions = []
     actualParameters = []
     thisOption = None
     numberRemainingParameterForThisOption = 0
+
+    systemProgramName = argv[0]
+    if len(sys.argv) > 1: systemArguments = argv[1:]
+    else: systemArguments = []
 
     if not systemArguments: return []
     print("systemArgs len=", len(systemArguments))
@@ -80,11 +81,20 @@ def getOptions(possibleOptions):
 
     # check remaining possibelOpts still contain obligatory options
     for possibleOption in possibleOptions:
-        if possibleOption.isObligatory:
-            print("obligatory argument " + ("files" if possibleOption.key == "" else  possibleOption.key) + " not found")
+        if possibleOption.isMandatory:
+            print("mandatory argument " + ("files" if possibleOption.key == "" else  possibleOption.key) + " not found")
             return None
 
     return actualOptions
+
+def parseStdinput():
+    files = []
+    if not sys.stdin.isatty():
+        for line in sys.stdin:
+            files.append(line.rstrip())
+    return files
+# ________________________________________________________________
+# auxiliar functions
 
 def getOptionForArgument(possibleOptions, thisArgument):
     argumentWithoutKey = False
@@ -102,13 +112,6 @@ def getOptionForArgument(possibleOptions, thisArgument):
             return possibleOption
     print("the option", thisArgument, "is not valid")
     return None
-
-def parseStdinput():
-    files = []
-    if not sys.stdin.isatty():
-        for line in sys.stdin:
-            files.append(line.rstrip())
-    return files
 
 def showArgs(args):
     if args == None:
@@ -130,9 +133,10 @@ def main():
             PossibleOption("-v", 0, False),
             PossibleOption("", -1, True)]
 
-    showArgs(getOptions(examplePossibleArgs))
+    showArgs(getOptions(examplePossibleArgs, sys.argv))
     print("stdin: ", parseStdinput())
 
 
 if __name__ == "__main__":
+    import sys
     main()
