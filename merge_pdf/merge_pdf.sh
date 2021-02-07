@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 
 '''
 This script merges pdf files passed as arguments or - if not - piped via the
