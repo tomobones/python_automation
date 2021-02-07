@@ -3,11 +3,12 @@
 import datetime as dt
 
 # adjust this number to control, when first day wrt to this day begins
-number_days_from_now = 8
+number_days_from_now = 1
+number_weeks_each_row = 2
 
 start = dt.datetime.now() + dt.timedelta(days = number_days_from_now)
-start_and_a_week = start + dt.timedelta(days = 6)
-one_week = dt.timedelta(days = 7)
+start_and_a_week = start + dt.timedelta(days = (number_weeks_each_row * 7) - 1)
+one_week = dt.timedelta(days = number_weeks_each_row * 7)
 
 print("Datum; Name; Check;")
 
