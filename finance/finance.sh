@@ -74,7 +74,6 @@ this_month = int(dt.datetime.now().strftime("%m"))
 this_year = int(dt.datetime.now().strftime("%Y"))
 
 output(this_month, this_year)
-output(9, 2021)
 
 
 
