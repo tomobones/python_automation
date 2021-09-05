@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-import datetime as dt
 import pandas as pd
+import datetime as dt
 
 path = "/home/tomo/Dropbox/Markdown/Finanzen/ausgaben.csv"
 format = "%Y.%m.%d %H:%M"
@@ -29,6 +29,26 @@ kategorien = {
     "IT":it
 }
 
+monate = {
+    "Januar":1,
+    "Februar":2,
+    "März":3,
+    "April":4,
+    "Mai":5,
+    "Juni":6,
+    "Juli":7,
+    "August":8,
+    "September":9,
+    "Oktober":10,
+    "November":11,
+    "Dezember":12
+}
+
+def get_name_for_month(number):
+    for name, value in monate.items():
+        if value == number: return name
+    return "Nothing"
+
 # filter for tag list
 def filter_for_tag_list(tag_list):
     def has_same_tag(x):
@@ -39,16 +59,16 @@ def filter_for_tag_list(tag_list):
     return df["Tags"].apply(has_same_tag)
 
 # output
-def output():
-    monat = "September"
-    datum = "2021-"+monat
+def output(monat):
+    datum = "2021-"+str(monat)
     betrag = "Betrag"
     #print(df[datum]["Tags"])
-    print(f"\nFinanzen Aufteilung {monat}:")
-    print("--------------------------------------------------------------------------------")
+    print(f"\nFinanzen Aufteilung {get_name_for_month(monat)}:")
+    print("------------------------------")
     for kat, lst in kategorien.items():
         print(f"{kat}\t{df[filter_for_tag_list(lst)].loc[datum][betrag].sum():.2f} EUR")
     print(f"Gesamt \t{df.loc[datum][betrag].sum():.2f} EUR")
     print(f"")
 
-output()
+this_month = dt.datetime.now().strftime("%m")
+output(int(this_month))
