@@ -16,10 +16,10 @@ df["Tags"] = df["Tags"].str.replace(" ", "").str.slice(1).str.lower().str.split(
 # filter lists - maybe outsourced to a config file
 
 essen = ["nahrung", "nahrungsmittel", "essen", "eat", "gastro"]
-medizin = ["medizin", "medis", "apo", "apotheke"]
 bildung = ["bildung", "bücher", "coding", "udemy"]
 it = ["it", "software"]
 sport = ["sport", "bewegung", "verein", "1880"]
+medizin = ["medizin", "medis", "apo", "apotheke"]
 
 kategorien = {
     "Essen":essen,
@@ -29,7 +29,7 @@ kategorien = {
     "IT":it
 }
 
-monate = {
+month = {
     "Januar":1,
     "Februar":2,
     "März":3,
@@ -45,30 +45,42 @@ monate = {
 }
 
 def get_name_for_month(number):
-    for name, value in monate.items():
+    for name, value in month.items():
         if value == number: return name
     return "Nothing"
 
 # filter for tag list
 def filter_for_tag_list(tag_list):
-    def has_same_tag(x):
+    def has_common_tag(x):
         for tag1 in x:
             for tag2 in tag_list:
                 if tag1 == tag2: return True
         return False
-    return df["Tags"].apply(has_same_tag)
+    return df["Tags"].apply(has_common_tag)
 
 # output
-def output(monat):
-    datum = "2021-"+str(monat)
+def output(month, year):
+    datum = f"{year}-{month:02}"
     betrag = "Betrag"
     #print(df[datum]["Tags"])
-    print(f"\nFinanzen Aufteilung {get_name_for_month(monat)}:")
+    print(f"\nFinanzen Ausgaben {get_name_for_month(month)} {year}:")
     print("------------------------------")
     for kat, lst in kategorien.items():
         print(f"{kat}\t{df[filter_for_tag_list(lst)].loc[datum][betrag].sum():.2f} EUR")
     print(f"Gesamt \t{df.loc[datum][betrag].sum():.2f} EUR")
     print(f"")
 
-this_month = dt.datetime.now().strftime("%m")
-output(int(this_month))
+this_month = int(dt.datetime.now().strftime("%m"))
+this_year = int(dt.datetime.now().strftime("%Y"))
+
+output(this_month, this_year)
+output(9, 2021)
+
+
+
+
+
+
+
+
+
