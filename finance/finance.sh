@@ -16,6 +16,7 @@ format_once = "%Y.%m.%d %H:%M"
 format_monthly = "%Y.%m"
 
 # reading and preprocessing data
+
 df_once = pd.read_csv(path_once, delimiter=';')
 df_once["Datum Zeit"] = pd.to_datetime(df_once["Datum Zeit"], format=format_once)
 df_once.set_index("Datum Zeit", inplace=True)
@@ -85,36 +86,47 @@ def filter_is_due_in(this_month):
 
 # output functions
 
-def output(month, year):
+def output_thistime(month, year):
     datum = f"{year}-{month:02}"
     filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
     betrag = "Betrag"
     gesamt_einmalig = df_once.loc[datum][betrag].sum()
     gesamt_monatlich =  df_monthly.loc[filter_monatlich]['Betrag'].sum()
     print(f"\nAusgaben für {get_name_for_month(month)} {year}")
-    print("---------------------------")
+    print("-------------------------------")
     for kat, lst in kategorien.items():
         print(f"{kat:<20}{df_once[filter_for_tag_list(lst)].loc[datum][betrag].sum():7.2f} EUR")
     print(f"Gesamt              {gesamt_einmalig:7.2f} EUR")
-    print("")
-    print(f"Ständige Ausgaben   {gesamt_monatlich:7.2f} EUR")
-    print(f"Netto Ausgaben      {gesamt_monatlich + gesamt_einmalig:7.2f} EUR")
-    print("")
-        
+
 def output_monthly(month, year):
     filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
     gesamt_monatlich =  df_monthly.loc[filter_monatlich]['Betrag'].sum()
+    print(f"\nStändige Ausgaben Stand {get_name_for_month(month)} {year}")
+    print("-------------------------------")
     for index, row in df_monthly[filter_monatlich].iterrows():
         print(f"{row['Name']:<20}{row['Betrag']:7.2f} EUR")
     print(f"Gesamt              {gesamt_monatlich:7.2f} EUR")
 
+def output_summary(month, year):
+    datum = f"{year}-{month:02}"
+    filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
+    betrag = "Betrag"
+    gesamt_einmalig = df_once.loc[datum][betrag].sum()
+    gesamt_monatlich =  df_monthly.loc[filter_monatlich]['Betrag'].sum()
+    print(f"\nZusammenfassung {get_name_for_month(month)} {year}")
+    print("-------------------------------")
+    print(f"Zusätzliche Ausgaben{gesamt_einmalig:7.2f} EUR")
+    print(f"Ständige Ausgaben   {gesamt_monatlich:7.2f} EUR")
+    print(f"Netto Ausgaben      {gesamt_monatlich + gesamt_einmalig:7.2f} EUR")
 
 
 this_month = int(dt.datetime.now().strftime("%m"))
 this_year = int(dt.datetime.now().strftime("%Y"))
 
-output(this_month, this_year)
-output(9, 2021)
+output_thistime(this_month, this_year)
+#output_monthly(this_month, this_year)
+output_summary(this_month, this_year)
+print("")
 
 
 
