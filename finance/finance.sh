@@ -20,13 +20,15 @@ bildung = ["bildung", "bücher", "coding", "udemy"]
 it = ["it", "software"]
 sport = ["sport", "bewegung", "verein", "1880"]
 medizin = ["medizin", "medis", "apo", "apotheke"]
+haushalt = ["haushalt", "drogerie"]
 
 kategorien = {
-    "Essen":essen,
-    "Medizin":medizin,
-    "Bildung":bildung,
-    "Sport":sport,
-    "IT":it
+    "Essen   ":essen,
+    "Medizin ":medizin,
+    "Bildung ":bildung,
+    "Sport   ":sport,
+    "IT      ":it,
+    "Haushalt":haushalt
 }
 
 month = {
@@ -67,14 +69,14 @@ def output(month, year):
     print("------------------------------")
     for kat, lst in kategorien.items():
         print(f"{kat}\t{df[filter_for_tag_list(lst)].loc[datum][betrag].sum():.2f} EUR")
-    print(f"Gesamt \t{df.loc[datum][betrag].sum():.2f} EUR")
+    print(f"Gesamt \t\t{df.loc[datum][betrag].sum():.2f} EUR")
     print(f"")
 
 this_month = int(dt.datetime.now().strftime("%m"))
 this_year = int(dt.datetime.now().strftime("%Y"))
 
 output(this_month, this_year)
-
+output(9,2021)
 
 
 
