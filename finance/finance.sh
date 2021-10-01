@@ -1,17 +1,31 @@
 #!/usr/bin/python3
 
+'''
+TODO
+- ALLE ständige Ausgaben eintragen!!!!
+- mehrere outputs: detail, short
+- Netto Betrag immer angeben
+'''
+
 import pandas as pd
 import datetime as dt
 
-path = "/home/tomo/Dropbox/Markdown/Finanzen/ausgaben.csv"
-format = "%Y.%m.%d %H:%M"
+path_once = "/home/tomo/Dropbox/Markdown/Finanzen/ausgaben.csv"
+path_monthly = "/home/tomo/Dropbox/Markdown/Finanzen/ausgaben_monatlich.csv"
+format_once = "%Y.%m.%d %H:%M"
+format_monthly = "%Y.%m"
 
 # reading and preprocessing data
-df = pd.read_csv(path, delimiter=';')
-df["Datum Zeit"] = pd.to_datetime(df["Datum Zeit"], format=format)
-df.set_index("Datum Zeit", inplace=True)
-df["Betrag"] = pd.to_numeric(df["Betrag"])
-df["Tags"] = df["Tags"].str.replace(" ", "").str.slice(1).str.lower().str.split(pat="#")
+df_once = pd.read_csv(path_once, delimiter=';')
+df_once["Datum Zeit"] = pd.to_datetime(df_once["Datum Zeit"], format=format_once)
+df_once.set_index("Datum Zeit", inplace=True)
+df_once["Betrag"] = pd.to_numeric(df_once["Betrag"])
+df_once["Tags"] = df_once["Tags"].str.replace(" ", "").str.slice(1).str.lower().str.split(pat="#")
+
+df_monthly = pd.read_csv(path_monthly, delimiter=';')
+df_monthly["Datum_ab"] = pd.to_datetime(df_monthly["Datum_ab"], format=format_monthly, errors='coerce')
+df_monthly["Datum_bis"] = pd.to_datetime(df_monthly["Datum_bis"], format=format_monthly, errors='coerce')
+df_monthly["Monate"] = df_monthly["Monate"].str.replace(" ", "").str.split(pat=",")
 
 # filter lists - maybe outsourced to a config file
 
@@ -51,32 +65,56 @@ def get_name_for_month(number):
         if value == number: return name
     return "Nothing"
 
-# filter for tag list
+# filter
+
 def filter_for_tag_list(tag_list):
     def has_common_tag(x):
         for tag1 in x:
             for tag2 in tag_list:
                 if tag1 == tag2: return True
         return False
-    return df["Tags"].apply(has_common_tag)
+    return df_once["Tags"].apply(has_common_tag)
 
-# output
+def filter_is_due_in(this_month):
+    after_start = df_monthly["Datum_ab"] <= this_month
+    before_end = df_monthly["Datum_bis"] >= this_month
+    no_start = pd.isnull(df_monthly["Datum_ab"])
+    no_end = pd.isnull(df_monthly["Datum_bis"])
+    return (no_start | after_start) & (no_end | before_end)
+    
+
+# output functions
+
 def output(month, year):
     datum = f"{year}-{month:02}"
+    filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
     betrag = "Betrag"
-    #print(df[datum]["Tags"])
-    print(f"\nFinanzen Ausgaben {get_name_for_month(month)} {year}:")
-    print("------------------------------")
+    gesamt_einmalig = df_once.loc[datum][betrag].sum()
+    gesamt_monatlich =  df_monthly.loc[filter_monatlich]['Betrag'].sum()
+    print(f"\nAusgaben für {get_name_for_month(month)} {year}")
+    print("---------------------------")
     for kat, lst in kategorien.items():
-        print(f"{kat}\t{df[filter_for_tag_list(lst)].loc[datum][betrag].sum():.2f} EUR")
-    print(f"Gesamt \t\t{df.loc[datum][betrag].sum():.2f} EUR")
-    print(f"")
+        print(f"{kat:<20}{df_once[filter_for_tag_list(lst)].loc[datum][betrag].sum():7.2f} EUR")
+    print(f"Gesamt              {gesamt_einmalig:7.2f} EUR")
+    print("")
+    print(f"Ständige Ausgaben   {gesamt_monatlich:7.2f} EUR")
+    print(f"Netto Ausgaben      {gesamt_monatlich + gesamt_einmalig:7.2f} EUR")
+    print("")
+        
+def output_monthly(month, year):
+    filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
+    gesamt_monatlich =  df_monthly.loc[filter_monatlich]['Betrag'].sum()
+    for index, row in df_monthly[filter_monatlich].iterrows():
+        print(f"{row['Name']:<20}{row['Betrag']:7.2f} EUR")
+    print(f"Gesamt              {gesamt_monatlich:7.2f} EUR")
+
+
 
 this_month = int(dt.datetime.now().strftime("%m"))
 this_year = int(dt.datetime.now().strftime("%Y"))
 
 output(this_month, this_year)
-output(9,2021)
+output(9, 2021)
 
 
 
