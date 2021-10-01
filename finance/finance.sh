@@ -12,6 +12,9 @@ TODO
     - für verschiedene Rubriken
     - Durchschnittswerte für Rubriken
     - Std abweichungen für Rubriken
+    - Torte aller ständigen Ausgaben
+    - Relation einzelner Posten Ausgaben zum Gesamteingang
+    - Kummulierende der Netto Ausgaben
 '''
 
 import pandas as pd
