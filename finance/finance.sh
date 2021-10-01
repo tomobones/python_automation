@@ -7,6 +7,11 @@ TODO
 - Netto Betrag immer angeben
 - Ständig: Eingänge und Ausgänge gesondert betrachten
 - Feld "Monate" berücksichtigen, Testen
+- Statistiken
+    - Charts anzeigen der Irregulären Ausgaben
+    - für verschiedene Rubriken
+    - Durchschnittswerte für Rubriken
+    - Std abweichungen für Rubriken
 '''
 
 import pandas as pd
