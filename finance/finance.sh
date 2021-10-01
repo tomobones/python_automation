@@ -5,6 +5,8 @@ TODO
 - ALLE ständige Ausgaben eintragen!!!!
 - mehrere outputs: detail, short
 - Netto Betrag immer angeben
+- Ständig: Eingänge und Ausgänge gesondert betrachten
+- Feld "Monate" berücksichtigen, Testen
 '''
 
 import pandas as pd
@@ -86,7 +88,7 @@ def filter_is_due_in(this_month):
 
 # output functions
 
-def output_thistime(month, year):
+def output_irregular(month, year):
     datum = f"{year}-{month:02}"
     filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
     betrag = "Betrag"
@@ -100,32 +102,41 @@ def output_thistime(month, year):
 
 def output_monthly(month, year):
     filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
-    gesamt_monatlich =  df_monthly.loc[filter_monatlich]['Betrag'].sum()
+    filter_gehalt = df_monthly["Name"] == "Gehalt"
+    gesamt_monatlich =  df_monthly.loc[~filter_gehalt & filter_monatlich]['Betrag'].sum()
+    gehalt =  df_monthly.loc[filter_gehalt & filter_monatlich]['Betrag'].sum()
     print(f"\nStändige Ausgaben Stand {get_name_for_month(month)} {year}")
     print("-------------------------------")
-    for index, row in df_monthly[filter_monatlich].iterrows():
+    for index, row in df_monthly[~filter_gehalt & filter_monatlich].iterrows():
         print(f"{row['Name']:<20}{row['Betrag']:7.2f} EUR")
-    print(f"Gesamt              {gesamt_monatlich:7.2f} EUR")
+    print("")
+    print(f"Gesamt Ausgaben     {gesamt_monatlich:7.2f} EUR")
+    print(f"Gehalt             {gehalt:7.2f} EUR")
+    print(f"Netto Ausgaben     {gesamt_monatlich + gehalt:7.2f} EUR")
 
 def output_summary(month, year):
     datum = f"{year}-{month:02}"
     filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
+    filter_gehalt = df_monthly["Name"] == "Gehalt"
     betrag = "Betrag"
     gesamt_einmalig = df_once.loc[datum][betrag].sum()
-    gesamt_monatlich =  df_monthly.loc[filter_monatlich]['Betrag'].sum()
+    gesamt_monatlich =  df_monthly.loc[~filter_gehalt & filter_monatlich]['Betrag'].sum()
+    gehalt =  df_monthly.loc[filter_gehalt & filter_monatlich]['Betrag'].sum()
     print(f"\nZusammenfassung {get_name_for_month(month)} {year}")
     print("-------------------------------")
-    print(f"Zusätzliche Ausgaben{gesamt_einmalig:7.2f} EUR")
+    print(f"Ausgaben {get_name_for_month(month):<10} {gesamt_einmalig:7.2f} EUR")
     print(f"Ständige Ausgaben   {gesamt_monatlich:7.2f} EUR")
-    print(f"Netto Ausgaben      {gesamt_monatlich + gesamt_einmalig:7.2f} EUR")
+    print(f"Gehalt             {gehalt:7.2f} EUR")
+    print(f"Netto Ausgaben      {gehalt + gesamt_monatlich + gesamt_einmalig:7.2f} EUR")
 
 
 this_month = int(dt.datetime.now().strftime("%m"))
 this_year = int(dt.datetime.now().strftime("%Y"))
 
-output_thistime(this_month, this_year)
-#output_monthly(this_month, this_year)
+output_irregular(this_month, this_year)
 output_summary(this_month, this_year)
+output_summary(this_month-1, this_year)
+output_summary(this_month-2, this_year)
 print("")
 
 
