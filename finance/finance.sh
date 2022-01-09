@@ -15,6 +15,7 @@ TODO
     - Torte aller ständigen Ausgaben
     - Relation einzelner Posten Ausgaben zum Gesamteingang
     - Kummulierende der Netto Ausgaben
+- Top 10 der höchsten Ausgaben
 '''
 
 import pandas as pd
@@ -36,7 +37,7 @@ df_once["Tags"] = df_once["Tags"].str.replace(" ", "").str.slice(1).str.lower().
 df_monthly = pd.read_csv(path_monthly, delimiter=';')
 df_monthly["Datum_ab"] = pd.to_datetime(df_monthly["Datum_ab"], format=format_monthly, errors='coerce')
 df_monthly["Datum_bis"] = pd.to_datetime(df_monthly["Datum_bis"], format=format_monthly, errors='coerce')
-df_monthly["Monate"] = df_monthly["Monate"].str.replace(" ", "").str.split(pat=",")
+#df_monthly["Monate"] = df_monthly["Monate"].str.replace(" ", "").str.split(pat=",")
 
 # filter lists - maybe outsourced to a config file
 
@@ -110,7 +111,7 @@ def output_irregular(month, year):
 
 def output_monthly(month, year):
     filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
-    filter_gehalt = df_monthly["Name"] == "Gehalt"
+    filter_gehalt = df_monthly['Name'].str.contains('Gehalt', case=False)
     gesamt_monatlich =  df_monthly.loc[~filter_gehalt & filter_monatlich]['Betrag'].sum()
     gehalt =  df_monthly.loc[filter_gehalt & filter_monatlich]['Betrag'].sum()
     print(f"\nStändige Ausgaben Stand {get_name_for_month(month)} {year}")
@@ -125,7 +126,7 @@ def output_monthly(month, year):
 def output_summary(month, year):
     datum = f"{year}-{month:02}"
     filter_monatlich = filter_is_due_in(dt.datetime(year, month, 1))
-    filter_gehalt = df_monthly["Name"] == "Gehalt"
+    filter_gehalt = df_monthly['Name'].str.contains('Gehalt', case=False)
     betrag = "Betrag"
     gesamt_einmalig = df_once.loc[datum][betrag].sum()
     gesamt_monatlich =  df_monthly.loc[~filter_gehalt & filter_monatlich]['Betrag'].sum()
@@ -137,14 +138,23 @@ def output_summary(month, year):
     print(f"Gehalt             {gehalt:7.2f} EUR")
     print(f"Netto Ausgaben      {gehalt + gesamt_monatlich + gesamt_einmalig:7.2f} EUR")
 
+# helper functions
+
+def month_and_year_before(month, year):
+    if month > 1: return month - 1, year
+    else: return 12, year - 1
+    
 
 this_month = int(dt.datetime.now().strftime("%m"))
 this_year = int(dt.datetime.now().strftime("%Y"))
 
+print("test function")
+print(month_and_year_before(this_month, this_year))
+
 output_irregular(this_month, this_year)
 output_summary(this_month, this_year)
-output_summary(this_month-1, this_year)
-output_summary(this_month-2, this_year)
+output_summary(*month_and_year_before(this_month, this_year))
+output_summary(*month_and_year_before(*month_and_year_before(this_month, this_year)))
 print("")
 
 
