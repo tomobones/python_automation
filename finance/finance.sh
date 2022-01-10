@@ -140,7 +140,7 @@ def output_summary(month, year):
 
 # helper functions
 
-def month_and_year_before(month, year):
+def month_before(month, year):
     if month > 1: return month - 1, year
     else: return 12, year - 1
     
@@ -148,13 +148,10 @@ def month_and_year_before(month, year):
 this_month = int(dt.datetime.now().strftime("%m"))
 this_year = int(dt.datetime.now().strftime("%Y"))
 
-print("test function")
-print(month_and_year_before(this_month, this_year))
-
 output_irregular(this_month, this_year)
 output_summary(this_month, this_year)
-output_summary(*month_and_year_before(this_month, this_year))
-output_summary(*month_and_year_before(*month_and_year_before(this_month, this_year)))
+output_summary(*month_before(this_month, this_year))
+output_summary(*month_before(*month_before(this_month, this_year)))
 print("")
 
 
