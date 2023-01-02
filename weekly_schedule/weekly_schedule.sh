@@ -3,7 +3,7 @@
 import datetime as dt
 
 # adjust these numbers, eg to control, when first day wrt to this day begins
-number_days_from_now = -5
+number_days_from_now = -2
 number_weeks_each_row = 1
 number_months = 60
 names = ["Tomo", "Mara", "Carli", "Flow", "Natascha", "Cenk", "Christine"]

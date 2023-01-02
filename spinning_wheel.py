@@ -8,5 +8,5 @@ while True:
         #sys.stdout.write("\r%c" % char)
         #sys.stdout.flush()
         print("\r", char, sep="", end="", flush=True, file=sys.stdout)
-        time.sleep(1)
+        time.sleep(.1)
 

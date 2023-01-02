@@ -16,4 +16,4 @@ einzahlung = 50
 #anlage(start_kapital, zins, jahre, einzahlung)
 #anlage(2000, 1.06, 37, 25)
 #anlage(0, 1.06, 7, 25)
-anlage(15000, 1.06, 25, 200)
+anlage(15000, 1.05, 25, 600)

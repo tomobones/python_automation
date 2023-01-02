@@ -18,11 +18,13 @@ TODO
 - Top 10 der höchsten Ausgaben
 '''
 
+# alias grepfin='grep -vE "^[0-9]{1,3};20[0-9]{2}\.[01][0-9]\.[0123][0-9] [012][0-9]:[0-5][0-9];[0-9]+\.[0-9]{2};[^;]+;[^;]+;[^;]+$"'
+
 import pandas as pd
 import datetime as dt
 
-path_once = "/home/tomo/Dropbox/Markdown/Finanzen/ausgaben.csv"
-path_monthly = "/home/tomo/Dropbox/Markdown/Finanzen/ausgaben_monatlich.csv"
+path_once = "/home/tomo/NextCloud/Markdown/Finanzen/ausgaben.csv"
+path_monthly = "/home/tomo/NextCloud/Markdown/Finanzen/ausgaben_monatlich.csv"
 format_once = "%Y.%m.%d %H:%M"
 format_monthly = "%Y.%m"
 
